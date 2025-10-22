@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import LandingPageFooter from "./landingPage/LadingPageFooter";
+import LandingPageFooter from "./landingPage/LandingPageFooter";
 import { cn } from "@/lib/utils";
 import { useAccount } from "wagmi";
 import { Card, CardContent } from "./ui/card";

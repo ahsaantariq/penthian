@@ -10,8 +10,14 @@ require("dotenv").config();
 // const VERIFF_CLIENT = "4014911e-396e-49a5-998e-08115c800fe8"; // x-auth-client (API key)
 // const VERIFF_SECRET = "2c0f0b83-9b9e-452e-b8b9-721a4b6d4612"; // shared secret for HMAC signing
 const VERIFF_API_BASE = "https://stationapi.veriff.com";
-const VERIFF_CLIENT = "a99a41d6-9803-4d20-9ea5-8e053fb951aa";
-const VERIFF_SECRET = "38845c3d-5ddd-4492-950b-1b63d350116a";
+
+//======= GOD WILL =============
+const VERIFF_CLIENT = "65193703-135d-40e7-9fe0-1f49df34b681";
+const VERIFF_SECRET = "12d8c187-b6d4-4ab1-a4cf-0e7b13f63bf2";
+
+//======= CHIRS =============
+// const VERIFF_CLIENT = "e3a8ada1-d1ca-483e-aa20-4329a4590583";
+// const VERIFF_SECRET = "5ddf5252-f755-450c-bd9d-cdae742a94a0";
 
 if (!VERIFF_CLIENT || !VERIFF_SECRET) {
   console.error("Missing VERIFF_CLIENT or VERIFF_SECRET in env");
@@ -29,15 +35,18 @@ function signHmac(payload) {
 
 // === Veriff helpers ===
 async function getVeriffDecision(sessionId) {
+  console.log("🚀 ~ getVeriffDecision ~ sessionId:", sessionId);
   const headers = {
     "X-AUTH-CLIENT": VERIFF_CLIENT,
     "X-HMAC-SIGNATURE": signHmac(sessionId),
   };
+  // console.log("🚀 ~ getVeriffDecision ~ headers:", headers);
   const resp = await axios.get(
-    `${VERIFF_API_BASE}/v1/sessions/${sessionId}/decision`,
+    `${VERIFF_API_BASE}/v1/sessions/${sessionId}/decision/fullauto?version=1.0.0`,
     { headers }
   );
-  return resp.data?.verification ?? null;
+  console.log("🚀 ~ getVeriffDecision ~ resp.data:", resp?.data?.decision);
+  return resp?.data?.decision ?? null;
 }
 
 async function deleteVeriffSession(sessionId) {
@@ -67,19 +76,21 @@ router.post("/save-session", async (req, res) => {
       // check decision for existing session
       const decision = await getVeriffDecision(existing.sessionId);
       console.log("🚀 ~ decision?.status:", decision);
-      if (decision?.status !== "approved") {
-        // if status is null → delete old session in Veriff
+      if (decision == "approved") {
+        // if status exists (approved/declined) → don't overwrite
+        return res.status(200).json({
+          success: true,
+          message: "User already has a completed KYC session",
+        });
+
+      } else {
+
+                // if status is null → delete old session in Veriff
         await deleteVeriffSession(existing.sessionId).catch((err) => {
           console.error(
             "Delete session error:",
             err.response?.data || err.message
           );
-        });
-      } else {
-        // if status exists (approved/declined) → don't overwrite
-        return res.status(200).json({
-          success: true,
-          message: "User already has a completed KYC session",
         });
       }
     }
@@ -124,13 +135,13 @@ router.get("/status/:wallet", async (req, res) => {
       });
     }
 
-    const decision = await getVeriffDecision(user.sessionId);
+    const decision = await getVeriffDecision(user.sessionId); //null | approved
 
     return res.status(200).json({
       success: true,
       data: {
         walletAddress: wallet,
-        decision: decision === null || !decision?.status ? "pending" : decision.status ,
+        decision: decision === null ? "pending" : decision ,
       },
     });
   } catch (err) {
@@ -138,5 +149,61 @@ router.get("/status/:wallet", async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 });
+
+// 3. KYC WEBHOOK
+// router.post("/webhook", async (req, res) => {
+//   try {
+//     console.log("Received a webhook");
+
+//     const signature = req.get("x-hmac-signature");
+//     const secret = API_SECRET;
+//     const payload = req.body;
+
+//     console.log(
+//       "🚀 ~ ==============================================================:"
+//     );
+//     console.log("🚀 ~ req.headers:", req.headers);
+//     console.log("🚀 ~ req.body:", req.body);
+//     console.log(
+//       "🚀 ~ ==============================================================:"
+//     );
+
+//     const isValid = isSignatureValid({ signature, secret, payload });
+//     console.log("Validated signature:", isValid);
+
+//     if (!isValid) {
+//       return res.status(400).json({ message: "Invalid signature" });
+//     }
+//     const wallet = req.body?.vendorData;
+
+//     if (!wallet) {
+//       return res.status(404).json({ message: "wallet not found" });
+//     }
+//     const decision = req.body?.data?.verification?.decision; //'declined'
+//     console.log("🚀 ~ decision:", decision)
+
+//     if (!decision) {
+//       return res.status(404).json({ message: "decision not found" });
+//     }
+
+//     if (decision !== "declined") {
+//       return res.status(404).json({ message: "Invalid decision" });
+//     }
+
+//     const updated = await User.updateOne(
+//       { walletAddress: wallet },
+//       { $set: { kycStatus: decision } },
+//       { upsert: true }
+//     );
+
+//     if (!updated) {
+//       return res.status(404).json({ message: "wallet record not found" });
+//     }
+
+//     return res.status(200).json({ message: "received" });
+//   } catch (error) {
+//     return res.status(500).json({ message: "internal server error" });
+//   }
+// });
 
 module.exports = router;

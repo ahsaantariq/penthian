@@ -1,18 +1,12 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { amlPolicy } from "@/app/MockData/amlPolicy";
-import { termsAndConditions } from "@/app/MockData/termsAndConditions";
-import { productDisclosure } from "@/app/MockData/productDisclosure";
 import LandingPageContainer from "./landingPage/LandingPageContainer";
-import { PolicyDialogItem } from "./PolicyDialogItem";
 import { Facebook, Instagram, Linkedin, Mail, Twitter } from "lucide-react";
 
-function Footer() {
-
-  const companyLinks = [
+const companyLinks = [
     { name: "About Us", href: "/about-us" },
-    { name: "Team", href: "/#" },
+    // { name: "Team", href: "/#" },
     { name: "Vision", href: "/vision" },
     { name: "Careers", href: "/career" },
   ]
@@ -24,10 +18,12 @@ function Footer() {
     { name: "FAQs", href: "/#faqs" },
   ]
 
-  const legalLinks = [
-    { name: "Terms of Service", href: "/#" },
-    { name: "Privacy Policy", href: "/#" },
-    { name: "Compliance", href: "/#" },
+  export const legalLinks = [
+    { name: "AML", href: "/legal/aml" },
+    { name: "Privacy Policy", href: "/legal/privacy-policy" },
+    { name: "Terms and conditions", href: "/legal/terms-and-conditions" },
+    { name: "Cyber Security", href: "/legal/cyber-security" },
+    { name: "Marketplace Policy", href: "/legal/marketplace-policy" },
   ]
 
   const socialLinks = [
@@ -36,6 +32,8 @@ function Footer() {
     { name: "Facebook", href: "https://www.facebook.com/penthiandapp/", icon: Facebook },
     { name: "LinkedIn", href: "https://www.linkedin.com/company/penthian/", icon: Linkedin },
   ]
+
+function Footer() {
 
   return (
     <>
@@ -131,18 +129,13 @@ function Footer() {
             <div className="space-y-4">
               <h3 className="text-base font-bold text-gray-900 uppercase tracking-wider">Legal</h3>
               <ul className="flex flex-col gap-4 text-start">
-                <PolicyDialogItem
-                  dialogTitle="AML Policy"
-                  dialogContent={amlPolicy.content}
-                />
-                <PolicyDialogItem
-                  dialogTitle="Terms and Conditions"
-                  dialogContent={termsAndConditions.content}
-                />
-                <PolicyDialogItem
-                  dialogTitle="Product Disclosure Statement"
-                  dialogContent={productDisclosure.content}
-                />
+                {legalLinks.map((link) => (
+                  <li key={link.name}>
+                    <Link href={link.href} className="hover:text-gray-900 transition-colors">
+                      {link.name}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>

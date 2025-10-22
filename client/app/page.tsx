@@ -15,6 +15,7 @@ import Audience from "./components/landingPage/audience";
 import WhatYouGain from "./components/landingPage/what-you-gain";
 import OurVision from "./components/landingPage/our-vision";
 import Tokenization from "./components/landingPage/tokenization";
+import Blogs from "./components/Blogs";
 
 export default function Page() {
 
@@ -42,6 +43,7 @@ export default function Page() {
       <FastMarquee />
       <Audience />
       <Testimonials />
+      <Blogs />
       <FAQ />
       <CTA />
       <Footer />

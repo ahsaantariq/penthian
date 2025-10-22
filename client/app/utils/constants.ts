@@ -35,7 +35,7 @@ const CONFIG_MAP: Record<EnvType, ConfigType> = {
     rwaABI: rwaABI,
     usdc: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
     usdcABI: usdcABI,
-    supportedChain: mainnet ,
+    supportedChain: mainnet,
     rpcUrl: "https://eth-mainnet.g.alchemy.com/v2/_8ZpKCWtD7f-jc02AcGUf",
     explorerBaseUrl: "https://etherscan.io",
     subgraphUrls: {
@@ -155,6 +155,8 @@ export const WERT_CONFIG: WertConfigType = WERT_CONFIG_MAP[ENVIRONMENT];
 export const SALT_ETH = 0.00000001;
 export const BACKEND_BASE_URL =
   "https://bitstake-rwa-marketplace-backend.vercel.app";
+// export const BACKEND_BASE_URL =
+//   "http://localhost:5001";
 
 // Exporting the default array of image URLs using the `src` property
 export const DEFAULT_IMAGES: string[] = [

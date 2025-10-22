@@ -36,11 +36,11 @@ export default function Partners() {
       alt: "3",
       // style: 'w-16 3xl:w-20'
     },
-    {
-      src: "/assets/landingPage/hero/4.png",
-      alt: "4",
-      // style: 'w-20 3xl:w-28'
-    },
+    // {
+    //   src: "/assets/landingPage/hero/4.png",
+    //   alt: "4",
+    //   // style: 'w-20 3xl:w-28'
+    // },
     {
       src: "/assets/landingPage/hero/5.png",
       alt: "5",
@@ -58,15 +58,13 @@ export default function Partners() {
     }
   ];
 
-
-
   // const isSmallScreen = useMediaQuery('max-width: ')
 
   return (
     <Section className="bg-cream">
       <LandingPageContainer className="py-12 3xl:py-16 !pt-0 space-y-12 3xl:space-y-20">
 
-        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-7 xl:gap-6 3xl:gap-0 items-center justify-center md:justify-between container mx-auto px-4 max-w-6xl w-full pt-6 sm:pt-2">
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 xl:gap-6 3xl:gap-0 items-center justify-center md:justify-between container mx-auto px-4 max-w-6xl w-full pt-6 sm:pt-2">
           {logos.map((logo, index) => (
             <div
               key={index}
@@ -78,9 +76,9 @@ export default function Partners() {
                 width={100}
                 height={100}
                 quality={100}
-                className={cn(`hover:opacity-80 transition-opacity duration-300 max-w-full h-full object-contain w-2/4 sm:w-2/5 md:2/5 lg:w-1/4 xl:w-3/4`,
+                className={cn(`hover:opacity-80 transition-opacity duration-300 max-w-full h-full object-contain w-3/4 sm:w-2/5 md:2/4 lg:w-2/5 xl:w-3/4`,
                   // logo.style
-                  index === 6 && 'w-1/3 sm:w-1/6 md:w-[12%] lg:w-[10%] xl:w-2/3'
+                  index === 5 && 'w-2/4 sm:w-2/6 md:w-[30%] lg:w-[30%] xl:w-2/4'
                 )}
               />
             </div>

@@ -3,7 +3,7 @@
 import React from "react";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import LandingPageFooter from "./landingPage/LadingPageFooter";
+import LandingPageFooter from "./landingPage/LandingPageFooter";
 import { useBitStakeContext } from "../context/BitstakeContext";
 import { Card, CardContent } from "./ui/card";
 import { ConnectWalletButton } from "./ConnectWalletButton";

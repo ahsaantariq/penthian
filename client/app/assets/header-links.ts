@@ -154,6 +154,11 @@ export const navItems: Links[] = [
         label: "Properties",
     },
     {
+        title: "Docs",
+        href: "https://docs.penthian.com",
+        label: "Docs",
+    },
+    {
         title: "Owners Club",
         href: "https://ownersclub.penthian.com/",
         label: "Owners Club",

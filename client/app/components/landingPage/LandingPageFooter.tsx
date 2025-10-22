@@ -2,11 +2,9 @@ import React from "react";
 import LandingPageContainer from "./LandingPageContainer";
 import Image from "next/image";
 import Link from "next/link";
-import { amlPolicy } from "@/app/MockData/amlPolicy";
-import { termsAndConditions } from "@/app/MockData/termsAndConditions";
-import { productDisclosure } from "@/app/MockData/productDisclosure";
 import { PolicyDialogItem } from "../PolicyDialogItem";
 import { socialLinks } from "@/app/data/socialLinks";
+import { legalLinks } from "../Footer";
 
 function LandingPageFooter() {
 
@@ -68,18 +66,13 @@ function LandingPageFooter() {
                 <div>
                   <h3 className="text-grey-2 pb-5 sm:ml-3">Policies</h3>
                   <ul className="flex flex-col gap-4 text-start">
-                    <PolicyDialogItem
-                      dialogTitle="AML Policy"
-                      dialogContent={amlPolicy.content}
-                    />
-                    <PolicyDialogItem
-                      dialogTitle="Terms and Conditions"
-                      dialogContent={termsAndConditions.content}
-                    />
-                    <PolicyDialogItem
-                      dialogTitle="Product Disclosure Statement"
-                      dialogContent={productDisclosure.content}
-                    />
+                    {legalLinks.map((link) => (
+                      <li key={link.name}>
+                        <Link href={link.href} className="hover:text-gray-900 transition-colors">
+                          {link.name}
+                        </Link>
+                      </li>
+                    ))}
                   </ul>
                 </div>
               </div>

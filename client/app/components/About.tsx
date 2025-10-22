@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { aboutUsData } from "../MockData/aboutUs";
+import { aboutUsData } from "../MockData/data";
 
 function About() {
   const { about } = aboutUsData;
@@ -24,7 +24,7 @@ function About() {
         <p className="text-base xl:text-lg 3xl:text-2xl">We created <span className="text-[#143560] font-bold">Penthian to change that</span>. Our vision is simple:<span className="text-[#143560] font-bold">to make ownership collaborative</span>.To give people a trusted way to co-own income-producing assets: property and businesses alongside others, with clear rules, transparent systems, and a platform built on real technology. We’re here to unlock opportunity for property developers, for business founders, and for the everyday person who just wants a way in.</p>
 
         <p className="text-base xl:text-lg 3xl:text-2xl">Penthian connects the dots:</p>
-        
+
         <ul className="list-disc space-y-2">
           {about.features.map((feature, idx) => (
             <li key={idx} className="text-base xl:text-lg 3xl:text-2xl">{feature}</li>

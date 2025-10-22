@@ -16,9 +16,9 @@ const allowedOrigins = [
 ];
 
 //======================== VARIABLES & MIDDLEWARES ========================\
-const MONGO_URI = "mongodb+srv://admin:admin12345@penthian.q1acfij.mongodb.net/?retryWrites=true&w=majority&appName=Penthian"
+const MONGO_URI =
+  "mongodb+srv://admin:admin12345@penthian.q1acfij.mongodb.net/?retryWrites=true&w=majority&appName=Penthian";
 //======================== VARIABLES & MIDDLEWARES ========================
-
 
 // CORS configuration function
 const corsOptions = {
@@ -38,7 +38,6 @@ const corsOptions = {
 app.use(cors(corsOptions)); // Apply CORS middleware with the dynamic options
 
 app.use(express.json());
-
 
 // MongoDB connection with caching for serverless environments
 let cachedDb = null;
@@ -67,7 +66,9 @@ app.use(async (req, res, next) => {
     await connectToDatabase();
     next();
   } catch (err) {
-    throw new Error("Database connection failed");
+    // throw new Error("Database connection failed");
+
+    return res.status(500).json({ message: "internal server error, DB" });
   }
 });
 

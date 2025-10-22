@@ -6,7 +6,7 @@ import CountryDropdown from "./CountryDropdown";
 import HomeTypeDropdown from "./HomeTypeDropdown";
 import PropertyTypeDropdown from "./PropertyTypeDropdown";
 import { useAccount } from "wagmi";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import SaleTime from "./SaleTime";
 import CityDropdown from "./CityDropdown";
 import { useKYCModal } from "@/app/context/KYCModalContext";
@@ -31,8 +31,6 @@ import {
   MIN_SALETIME,
 } from "@/app/utils/constants";
 import UserDashboard from "@/app/components/UserDashboard";
-import { RequestNewPropertySkeleton } from "@/app/components/ui/SkeletonCard";
-import Loader from "@/app/components/Loader";
 import DocumentUpload, { DocumentPreview } from "./DocumentUpload";
 import { FiPlus, FiMinus } from "react-icons/fi";
 import { MapPreview } from "@/app/components/MapPicker";
@@ -52,7 +50,6 @@ import MapCoordinateSelector, {
 
 const MAX_IMAGES_UPLOADS = 5;
 const MAX_DOCUMENT_UPLOADS = 5;
-const ONE_HOUR_SECONDS = 3600;
 
 const RequestNewProperty = () => {
   const { address: account } = useAccount();
@@ -124,10 +121,22 @@ const RequestNewProperty = () => {
       { value: "Apartment", label: "Apartment" },
     ]);
     setPropertyTypes([
-      { value: "Real State", label: "Real State" },
+      // Broad categories
+      { value: "Real Estate", label: "Real Estate" },
       { value: "Stocks", label: "Stocks" },
+
+      // Property categories
       { value: "Residential", label: "Residential" },
       { value: "Commercial", label: "Commercial" },
+      { value: "Land", label: "Land" },
+
+      // Subtypes
+      { value: "Villa", label: "Villa" },
+      { value: "Townhouse", label: "Townhouse" },
+      { value: "Unit", label: "Unit" },
+      { value: "Acreage", label: "Acreage" },
+      { value: "Rural", label: "Rural" },
+      { value: "Retirement Living", label: "Retirement Living" },
     ]);
   }, []);
 
@@ -160,14 +169,12 @@ const RequestNewProperty = () => {
     return totalSeconds;
   };
 
-
   useEffect(() => {
     if (selectedCoords) {
       handleChange("latitude", selectedCoords.lat);
       handleChange("longitude", selectedCoords.lng);
     }
   }, [selectedCoords]);
-
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -326,7 +333,6 @@ const RequestNewProperty = () => {
           : {}),
       };
 
-      console.log("🚀 ~ handleSubmit ~ nftMetadataJson:", nftMetadataJson);
       const metadataUriResponse = await uploadJSONToIPFS(nftMetadataJson);
       if (!metadataUriResponse.success)
         throw new Error(metadataUriResponse.message);
@@ -372,8 +378,6 @@ const RequestNewProperty = () => {
       setSubmitLoading(false);
     }
   };
-
-
 
   useEffect(() => {
     if (formData.days === 180) {

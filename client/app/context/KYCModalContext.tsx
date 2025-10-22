@@ -19,8 +19,8 @@ interface ModalContextProps {
   openModal: (_account: string) => Promise<void>;
   closeModal: () => void;
   kycStatus: string;
-  checkKycStatus: (_account: string) => Promise<void>
-  setKycStatus: Dispatch<SetStateAction<string>>
+  checkKycStatus: (_account: string) => Promise<void>;
+  setKycStatus: Dispatch<SetStateAction<string>>;
 }
 
 const KYCModalContext = createContext<ModalContextProps | undefined>(undefined);
@@ -52,17 +52,26 @@ export const KYCModalProvider: FC<ModalProviderProps> = ({ children }) => {
   };
 
   // Check wallet KYC status on connect
-  const checkKycStatus = async (_account: string) => {
+  const checkKycStatus = async (account: string) => {
+    // const _account = "0xe4666e96df678286d42944619fde27f5ad79b0ec";
+    const _account = account;
     try {
       const resp = await axios.get(
         `${BACKEND_BASE_URL}/api/kyc/status/${_account}`
       );
+      console.log(
+        "🚀 ~ checkKycStatus ~ resp.data?.data?.decision:",
+        resp.data?.data?.decision
+      );
       if (resp.data?.data?.decision == "approved") {
-        // Already has a decision (completed/declined)
         setKycStatus("completed");
         setShowModal(false);
+      } else if (resp.data?.data?.decision == "declined") {
+
+        setKycStatus("declined");
+        setShowModal(true);
+
       } else if (resp.data?.data?.decision == "pending") {
-        // Already has a decision (completed/declined)
         setKycStatus("pending");
         setShowModal(true);
       } else {
@@ -71,6 +80,8 @@ export const KYCModalProvider: FC<ModalProviderProps> = ({ children }) => {
         setShowModal(true);
       }
     } catch (err: any) {
+      setKycStatus("");
+      setShowModal(true);
       console.error("Error checking KYC status:", err.message);
     }
   };

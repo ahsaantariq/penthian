@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useAccount } from "wagmi";
 import { useKYCModal } from "../context/KYCModalContext";
 import { BACKEND_BASE_URL } from "../utils/constants";
 import { MESSAGES } from "@veriff/incontext-sdk";
+import { shortenWalletAddress } from "../context/helper";
+
 declare global {
   interface Window {
     Veriff?: any;
@@ -14,93 +16,120 @@ declare global {
 }
 
 const KYCModal = () => {
-  const { showModal, closeModal, checkKycStatus, kycStatus, setKycStatus } =
-    useKYCModal();
+  const { showModal, checkKycStatus, kycStatus, setKycStatus } = useKYCModal();
   const { address: account } = useAccount();
+  const [scriptsLoaded, setScriptsLoaded] = useState(false);
 
+  // ✅ Load Veriff SDK scripts only once globally
   useEffect(() => {
-    if (!showModal || !account || kycStatus === "pending") return;
+    const loadVeriffScripts = async () => {
+      const existing = document.querySelectorAll('script[src*="veriff"]');
+      if (existing.length >= 2) {
+        setScriptsLoaded(true);
+        return;
+      }
 
-    const loadScriptsAndStart = async () => {
-      const script1 = document.createElement("script");
-      script1.src = "https://cdn.veriff.me/sdk/js/1.5/veriff.min.js";
-      script1.async = true;
-      document.body.appendChild(script1);
+      const loadScript = (src: string) =>
+        new Promise<void>((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = src;
+          script.async = true;
+          script.onload = () => resolve();
+          script.onerror = () => reject(new Error(`Failed to load ${src}`));
+          document.body.appendChild(script);
+        });
 
-      const script2 = document.createElement("script");
-      script2.src = "https://cdn.veriff.me/incontext/js/v1/veriff.js";
-      script2.async = true;
-      document.body.appendChild(script2);
+      try {
+        await Promise.all([
+          loadScript("https://cdn.veriff.me/sdk/js/1.5/veriff.min.js"),
+          loadScript("https://cdn.veriff.me/incontext/js/v1/veriff.js"),
+        ]);
+        setScriptsLoaded(true);
+      } catch (err) {
+        console.error("Error loading Veriff SDK:", err);
+      }
+    };
 
-      script2.onload = () => {
-        if (window.Veriff) {
-          const veriff = window.Veriff({
-            host: "https://stationapi.veriff.com",
-            apiKey: process.env.NEXT_PUBLIC_VERIFF_API_KEY,
-            parentId: "veriff-root",
-            onSession: async (err: any, response: any) => {
-              if (!err && response?.verification) {
-                try {
-                  
-                  // Render Veriff iframe
-                  window.veriffSDK.createVeriffFrame({
-                    url: response.verification.url,
-                    onEvent: async function (msg: string) {
-                      if (msg === MESSAGES.FINISHED) {
-                        // Save session in backend
-                        await axios.post(`${BACKEND_BASE_URL}/api/kyc/save-session`, {
+    loadVeriffScripts();
+  }, []);
+
+  // ✅ Initialize Veriff only when scripts + modal + wallet are ready
+  useEffect(() => {
+    if (!showModal || !account || kycStatus === "pending" || !scriptsLoaded)
+      return;
+
+    const initVeriff = () => {
+      if (!window.Veriff) return console.warn("Veriff not available yet");
+
+      const veriff = window.Veriff({
+        host: "https://stationapi.veriff.com",
+        apiKey: process.env.NEXT_PUBLIC_VERIFF_API_KEY,
+        parentId: "veriff-root",
+        onSession: async (err: any, response: any) => {
+          if (!err && response?.verification) {
+            try {
+              // Mount iframe
+              window.veriffSDK.createVeriffFrame({
+                url: response.verification.url,
+                onEvent: async function (msg: string) {
+                  if (msg === MESSAGES.FINISHED) {
+                    try {
+                      
+                      await axios.post(
+                        `${BACKEND_BASE_URL}/api/kyc/save-session`,
+                        {
                           walletAddress: account,
                           sessionId: response.verification.id,
-                        });
-                        setKycStatus("pending");
-                        await checkKycStatus(account);
-                        closeModal();
-                      }
-                    },
-                  });
-                } catch (error) {
-                  console.error("Error saving session:", error);
-                }
-              }
-            },
-          });
+                        }
+                      );
+                      setKycStatus("pending");
+                      await checkKycStatus(account);
+                    } catch (error) {
+                      
+                    }
+                  }
+                },
+              });
+            } catch (error) {
+              console.error("Error saving KYC session:", error);
+            }
+          }
+        },
+      });
 
-          veriff.setParams({
-            person: { givenName: " ", lastName: " " },
-            vendorData: account.toLowerCase(),
-          });
+      veriff.setParams({
+        person: { givenName: " ", lastName: " " },
+        vendorData: account.toLowerCase(),
+      });
 
-          veriff.mount();
-        }
-      };
+      veriff.mount();
     };
 
-    loadScriptsAndStart();
+    // Wait briefly to ensure global object initialized
+    const timeout = setTimeout(initVeriff, 300);
+    return () => clearTimeout(timeout);
+  }, [showModal, account, scriptsLoaded, kycStatus]);
 
-    return () => {
-      const root = document.getElementById("veriff-root");
-      if (root) root.innerHTML = "";
-    };
-  }, [showModal, account, kycStatus]);
-
-  if (!showModal) return null;
-
-  if (kycStatus === "pending")
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black bg-opacity-50 ">
-        <div className="bg-white rounded-lg shadow-lg p-8 w-full flex flex-col justify-center items-center min-h-[500px] max-w-3xl mx-auto">
-          <p className="mb-6">We have received your KYC. Review in progress.</p>
-        </div>
-      </div>
-    );
+  if (!showModal || !account) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black bg-opacity-50 ">
       <div className="bg-white rounded-lg shadow-lg p-8 w-full flex flex-col justify-center items-center min-h-[500px] max-w-3xl mx-auto">
-        <p className="mb-6">Complete KYC to keep using Penthian.</p>
-
-        {/* Veriff SDK mounts iframe here */}
-        <div id="veriff-root" className="w-full h-full" />
+        {kycStatus === "pending" ? (
+          <p className="mb-6">We have received your KYC for wallet ({shortenWalletAddress(account)}). Review in progress.</p>
+        ) : kycStatus === "declined" ? (
+          <>
+            <p className="mb-6">
+              Your KYC submission for wallet ({shortenWalletAddress(account)}) was been declined, Please resubmit.
+            </p>
+            <div id="veriff-root" className="w-full h-full" />
+          </>
+        ) : (
+          <>
+            <p className="mb-6">Complete KYC for wallet ({shortenWalletAddress(account)}) to keep using Penthian.</p>
+            <div id="veriff-root" className="w-full h-full" />
+          </>
+        )}
       </div>
     </div>
   );

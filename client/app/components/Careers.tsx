@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { careerData } from "../MockData/aboutUs";
+import { careerData } from "../MockData/data";
 import Link from "next/link";
 import { Button } from "./ui/button";
 
@@ -17,7 +17,7 @@ function Careers() {
 
                 <Image src={'/assets/landingPage/vision-hero.png'} alt={'vision hero image'} width={1000} height={500} className="object-contain w-full h-full max-h-96" />
 
-                 <p className="text-xl xl:text-2xl 3xl:text-4xl text-center text-[#143560] font-bold">{careers.subTitle}</p>
+                <p className="text-xl xl:text-2xl 3xl:text-4xl text-center text-[#143560] font-bold">{careers.subTitle}</p>
 
                 {careers.description.map((paragraph, idx) => (
                     <p key={idx} className="text-base xl:text-lg 3xl:text-2xl">{paragraph}</p>

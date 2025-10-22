@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { aboutUsData, visionData } from "../MockData/aboutUs";
+import { aboutUsData, visionData } from "../MockData/data";
 
 function Vision() {
     const { vision } = visionData;
