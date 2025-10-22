@@ -154,7 +154,7 @@ export const WERT_CONFIG: WertConfigType = WERT_CONFIG_MAP[ENVIRONMENT];
 
 export const SALT_ETH = 0.00000001;
 export const BACKEND_BASE_URL =
-  "https://bitstake-rwa-marketplace-backend.vercel.app";
+  "https://penthian-backend.vercel.app";
 // export const BACKEND_BASE_URL =
 //   "http://localhost:5001";
 
