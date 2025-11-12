@@ -42,7 +42,7 @@ const CONFIG_MAP: Record<EnvType, ConfigType> = {
       market_url:
         "https://api.studio.thegraph.com/query/112121/penthian-eth-market/v0.0.1", //published
       form_url:
-        "https://api.studio.thegraph.com/query/112121/penthian-eth-form/v0.0.2", //published
+        "https://api.studio.thegraph.com/query/112121/penthian-eth-form/v0.0.3", //published
       rent_url:
         "https://api.studio.thegraph.com/query/112121/penthian-eth-rent/v0.0.1", //published
       voting_url:

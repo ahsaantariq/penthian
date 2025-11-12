@@ -59,15 +59,11 @@ export const KYCModalProvider: FC<ModalProviderProps> = ({ children }) => {
       const resp = await axios.get(
         `${BACKEND_BASE_URL}/api/kyc/status/${_account}`
       );
-      console.log(
-        "🚀 ~ checkKycStatus ~ resp.data?.data?.decision:",
-        resp.data?.data?.decision
-      );
       if (resp.data?.data?.decision == "approved") {
         setKycStatus("completed");
         setShowModal(false);
       } else if (resp.data?.data?.decision == "declined") {
-
+        
         setKycStatus("declined");
         setShowModal(true);
 
@@ -84,6 +80,8 @@ export const KYCModalProvider: FC<ModalProviderProps> = ({ children }) => {
       setShowModal(true);
       console.error("Error checking KYC status:", err.message);
     }
+    // setKycStatus("completed");//TODO:remove this line
+    
   };
 
   useEffect(() => {

@@ -85,7 +85,7 @@ const ListingFee: React.FC = () => {
                   {feeLoading ? (
                     <Skeleton className="h-10 w-32" />
                   ) : (
-                    `${registrationFees.toFixed(2)} %`
+                    `${registrationFees.toFixed(2)} USDC`
                   )}
                 </p>
               </div>
