@@ -771,14 +771,8 @@ export const BitStakeProvider: React.FC<{ children: ReactNode }> = ({
   }
   
   // Connected but KYC not completed → block only transaction routes
-  if (kycStatus !== "completed") {
-    const restrictedRoutes = ["/buy", "/checkout", "/sell", "/list", "/listing", "/withdraw", "/rent", "/claim"];
-    const isRestricted = restrictedRoutes.some(route => pathname.includes(route));
-
-    if (isRestricted) {
-      return <KYCModal />;
-    }
-    // If just viewing → fall through and show dashboard (no KYC modal)
+  if (account && kycStatus !== "completed") {
+    return <KYCModal />;
   }
 
   // Blacklisted user
