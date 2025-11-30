@@ -171,9 +171,9 @@ export const BitStakeProvider: React.FC<{ children: ReactNode }> = ({
   //============================================= STATE HOOKS =================================================
   const { address: account, status } = useAccount();
   const { kycStatus } = useKYCModal();
+  const pathname = usePathname();
   const [accountLoading, setAccountLoading] = useState(true);
 
-  const pathname = usePathname();
   const isAdminPage = pathname.startsWith("/dashboard/admin-setting");
   const isLandingPage = pathname === "/";
   const isUserPage = !isAdminPage && !isLandingPage;
@@ -761,100 +761,50 @@ export const BitStakeProvider: React.FC<{ children: ReactNode }> = ({
   //   userAccessLoading,
   // });
 
-  if (accountLoading || userAccessLoading) {
-    return (
-      <>
-        {/* <p>hi</p> */}
-        <PageLoader />
-      </>
-    );
-  } else if (!account) {
-    return (
-      <BitStakeContext.Provider value={contextValues}>
-        <div className="w-full min-h-screen h-full flex items-center justify-center bg-black relative">
-          <div className="hidden xl:flex flex-col items-center h-screen justify-center rounded-r-4xl max-w-sm 3xl:max-w-lg w-full bg-cream -mr-6 z-20">
-            <Card className="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 lg:static lg:top-auto lg:left-auto lg:transform-none flex flex-col gap-4 items-center justify-center full lg:mx-4 ">
-              <CardContent className="flex flex-col items-center justify-items-center gap-2 3xl:px-8">
-                <h2 className="text-xl sm:text-2xl 3xl:text-3xl font-medium text-center">
-                  Please connect your wallet
-                </h2>
-                <br />
-                <div className="w-full flex items-center justify-center">
-                  <ConnectWalletButton />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          <Card className="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 xl:hidden xl:top-auto xl:left-auto xl:transform-none flex flex-col gap-4 items-center justify-center full max-w-sm w-full xl:mx-4 z-20">
-            <CardContent className="flex flex-col items-center justify-items-center gap-2 3xl:px-8">
-              <h2 className="text-xl sm:text-2xl 3xl:text-3xl font-medium text-center">
-                Please connect your wallet
-              </h2>
-              <br />
-              <div className="w-full flex items-center justify-center">
-                <ConnectWalletButton />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Section
-            imageSrc={"/assets/login-bg.png"}
-            mobileSrc="/assets/login-bg.png"
-            className="min-h-screen justify-start xl:justify-center p-8 z-10"
-          >
-            <div className="w-full flex justify-center items-center">
-              <Link
-                href="/"
-                className="max-w-[200px] sm:max-w-xs 3xl:max-w-sm w-full flex justify-center"
-              >
-                <Image
-                  src="/assets/logo.svg"
-                  alt="Logo"
-                  width={1000}
-                  height={200}
-                  className="hidden sm:block h-auto w-full object-contain"
-                />
-                <Image
-                  src="/assets/logo.svg"
-                  alt="Logo"
-                  width={150}
-                  height={30}
-                  className="block sm:hidden h-auto w-full object-contain"
-                />
-              </Link>
-            </div>
-          </Section>
-        </div>
-      </BitStakeContext.Provider>
-    );
-  } else if (account && kycStatus !== "completed") {
-    return (<KYCModal />)
+    if (accountLoading || userAccessLoading) {
+    return <PageLoader />;
   }
-  else if (userAccess.isBlacklist) {
+
+   // Allow everyone to view dashboard WITHOUT wallet
+  if (!account) {
+    return <BitStakeContext.Provider value={contextValues}>{children}</BitStakeContext.Provider>;
+  }
+  
+  // Connected but KYC not completed → block only transaction routes
+  if (kycStatus !== "completed") {
+    const restrictedRoutes = ["/buy", "/checkout", "/sell", "/list", "/listing", "/withdraw", "/rent", "/claim"];
+    const isRestricted = restrictedRoutes.some(route => pathname.includes(route));
+
+    if (isRestricted) {
+      return <KYCModal />;
+    }
+    // If just viewing → fall through and show dashboard (no KYC modal)
+  }
+
+  // Blacklisted user
+  if (userAccess.isBlacklist) {
     return (
       <BitStakeContext.Provider value={contextValues}>
         <div className="w-full min-h-screen flex items-center justify-center">
           <Card className="max-w-96 flex flex-col gap-4 items-center justify-center">
             <CardContent className="flex flex-col items-center justify-items-center gap-4">
-              <h2 className="text-xl font-medium">You are Blacklist User</h2>
+              <h2 className="text-xl font-medium">You are Blacklisted User</h2>
               <p className="text-xl font-medium">Change the Wallet</p>
-              <div className="w-full flex items-center justify-center">
-                <ConnectWalletButton />
-              </div>
+              <ConnectWalletButton />
             </CardContent>
           </Card>
         </div>
       </BitStakeContext.Provider>
     );
-  } else {
-    return (
-      <BitStakeContext.Provider value={contextValues}>
-        {children}
-      </BitStakeContext.Provider>
-    );
   }
-};
+
+  // Normal flow → show dashboard
+  return (
+    <BitStakeContext.Provider value={contextValues}>
+      {children}
+    </BitStakeContext.Provider>
+  );
+}
 
 // Create a custom hook to use the BitStakeContext
 export const useBitStakeContext = () => {
