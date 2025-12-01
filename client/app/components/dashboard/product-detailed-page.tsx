@@ -123,7 +123,10 @@ const ProductDetailedPage: React.FC<ProductDetailedPageType> = ({
         <div className="space-y-6">
             <div className="w-full grid grid-cols-1 xl:grid-cols-8 macBook:grid-cols-11 gap-6">
                 <div className="xl:col-span-4 macBook:col-span-5 rounded-3xl bg-transparent">
-                    <ImageSlider images={product.images} />
+                   <ImageSlider 
+  images={product.images || metadata?.images || []} 
+  enableZoom={true}   // ← new prop to enable click-to-zoom
+/>
                 </div>
 
                 <Card
