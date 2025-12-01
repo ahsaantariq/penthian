@@ -770,11 +770,12 @@ export const BitStakeProvider: React.FC<{ children: ReactNode }> = ({
     return <BitStakeContext.Provider value={contextValues}>{children}</BitStakeContext.Provider>;
   }
   
-  // Connected but KYC not completed → block only transaction routes
+    // Connected but KYC not completed → show modal is controlled by KYCModalContext only
+  // We no longer force <KYCModal /> here — user can close it and keep browsing
   if (account && kycStatus !== "completed") {
-    return <KYCModal />;
+    // Do nothing — let KYCModal show only when showModal=true (user clicks button or first time or "Complete KYC")
+    // User can now close modal and continue using the site until they decide to complete KYC
   }
-
   // Blacklisted user
   if (userAccess.isBlacklist) {
     return (
@@ -796,6 +797,7 @@ export const BitStakeProvider: React.FC<{ children: ReactNode }> = ({
   return (
     <BitStakeContext.Provider value={contextValues}>
       {children}
+      <KYCModal />   {/* Only shows when user opens it */}
     </BitStakeContext.Provider>
   );
 }
