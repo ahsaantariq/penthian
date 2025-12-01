@@ -16,7 +16,14 @@ declare global {
 }
 
 const KYCModal = () => {
-  const { showModal, checkKycStatus, kycStatus, setKycStatus } = useKYCModal();
+  const { 
+    showModal, 
+    closeModal, 
+    checkKycStatus, 
+    kycStatus, 
+    setKycStatus 
+  } = useKYCModal();
+  
   const { address: account } = useAccount();
   const [scriptsLoaded, setScriptsLoaded] = useState(false);
 
@@ -113,8 +120,18 @@ const KYCModal = () => {
   if (!showModal || !account) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black bg-opacity-50 ">
-      <div className="bg-white rounded-lg shadow-lg p-8 w-full flex flex-col justify-center items-center min-h-[500px] max-w-3xl mx-auto">
+   <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black bg-opacity-50">
+  <div className="relative bg-white rounded-lg shadow-lg p-8 w-full max-w-3xl mx-4 min-h-[500px] flex flex-col items-center">
+    
+    {/* Close Button - now properly positioned */}
+    <button
+      onClick={closeModal}
+      className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-3xl leading-none"
+      aria-label="Close"
+    >
+      ×
+    </button>
+        
         {kycStatus === "pending" ? (
           <p className="mb-6">We have received your KYC for wallet ({shortenWalletAddress(account)}). Review in progress.</p>
         ) : kycStatus === "declined" ? (
