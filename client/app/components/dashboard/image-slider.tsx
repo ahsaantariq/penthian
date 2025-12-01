@@ -144,44 +144,54 @@ export default function ImageSlider({
                 <CarouselPrevious />
             </Carousel>
 
-            {/* Full-screen Lightbox */}
-            <Dialog.Root open={lightboxOpen} onOpenChange={setLightboxOpen}>
-                <Dialog.Portal>
-                    <Dialog.Overlay className="fixed inset-0 bg-black/95 z-[9998]" />
-                    <Dialog.Content className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
-                        <Dialog.Close className="absolute top-6 right-6 text-white hover:text-gray-300 transition">
-                            <X size={40} strokeWidth={2} />
-                        </Dialog.Close>
+            {/* Full-screen Lightbox – Click anywhere outside image to close */}
+<Dialog.Root open={lightboxOpen} onOpenChange={setLightboxOpen}>
+    <Dialog.Portal>
+        {/* Clickable dark background */}
+        <Dialog.Overlay 
+            className="fixed inset-0 bg-black/95 z-[9998] cursor-pointer"
+            onClick={() => setLightboxOpen(false)} 
+        />
 
-                        <div className="relative max-w-7xl max-h-full">
-                            <Image
-                                src={images[lightboxIndex]}
-                                alt="Full preview"
-                                width={1400}
-                                height={900}
-                                className="max-w-full max-h-[90vh] object-contain"
-                            />
-                        </div>
+        <Dialog.Content 
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-8 outline-none"
+            // Prevent closing when clicking on the image itself
+            onClick={(e) => e.stopPropagation()}
+        >
+            <Dialog.Close className="absolute top-6 right-6 text-white hover:text-gray-300 transition z-10">
+                <X size={40} strokeWidth={2} />
+            </Dialog.Close>
 
-                        {images.length > 1 && (
-                            <>
-                                <button
-                                    onClick={() => setLightboxIndex((i) => (i - 1 + images.length) % images.length)}
-                                    className="absolute left-6 top-1/2 -translate-y-1/2 text-white text-6xl hover:text-gray-300"
-                                >
-                                    ‹
-                                </button>
-                                <button
-                                    onClick={() => setLightboxIndex((i) => (i + 1) % images.length)}
-                                    className="absolute right-6 top-1/2 -translate-y-1/2 text-white text-6xl hover:text-gray-300"
-                                >
-                                    ›
-                                </button>
-                            </>
-                        )}
-                    </Dialog.Content>
-                </Dialog.Portal>
-            </Dialog.Root>
+            <div className="relative max-w-7xl max-h-full">
+                <Image
+                    src={images[lightboxIndex]}
+                    alt="Full preview"
+                    width={1400}
+                    height={900}
+                    className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+                />
+            </div>
+
+            {/* Navigation arrows */}
+            {images.length > 1 && (
+                <>
+                    <button
+                        onClick={() => setLightboxIndex((i) => (i - 1 + images.length) % images.length)}
+                        className="absolute left-6 top-1/2 -translate-y-1/2 text-white text-6xl hover:text-gray-300 transition"
+                    >
+                        ‹
+                    </button>
+                    <button
+                        onClick={() => setLightboxIndex((i) => (i + 1) % images.length)}
+                        className="absolute right-6 top-1/2 -translate-y-1/2 text-white text-6xl hover:text-gray-300 transition"
+                    >
+                        ›
+                    </button>
+                </>
+            )}
+        </Dialog.Content>
+    </Dialog.Portal>
+</Dialog.Root>
         </>
     );
 }
