@@ -1,3 +1,4 @@
+// Header.tsx
 "use client";
 
 import { usePathname } from "next/navigation";
@@ -7,11 +8,16 @@ import { MobileSidebar } from "./dashboard/mobile-sidebar";
 import { headerLinks, adminheaderLinks } from "../assets/header-links";
 import { useMemo } from "react";
 import { useBitStakeContext } from "../context/BitstakeContext";
+import { useKYCModal } from "../context/KYCModalContext";
+import { useAccount } from "wagmi";
+import { Button } from "../components/ui/button";
 import { Users } from "lucide-react";
 
 const Header = () => {
   const pathname = usePathname();
   const { userAccess } = useBitStakeContext();
+  const { kycStatus, openModal } = useKYCModal();
+  const { address: account } = useAccount();
 
   const finalLinks = pathname.startsWith("/dashboard/admin")
     ? adminheaderLinks
@@ -85,10 +91,21 @@ const Header = () => {
       )}
 
       <div className="flex items-center sm:gap-4">
+        {/* Show Complete KYC button only when connected but KYC not done */}
+        {account && kycStatus !== "completed" && (
+          <Button
+            onClick={() => openModal(account!)}
+            variant="default"
+            className="mr-3"
+          >
+            Complete KYC
+          </Button>
+        )}
+
         <div className="hidden sm:block">
           <ConnectWalletButton />
         </div>
-        <div className='block cursor-pointer lg:hidden'>
+        <div className="block cursor-pointer lg:hidden">
           <MobileSidebar />
         </div>
       </div>
