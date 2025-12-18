@@ -4,7 +4,7 @@ import { FaDiscord, FaInstagram, FaMedium, FaTelegram } from "react-icons/fa";
 export const socialLinks = [
     {
         platform: "Facebook",
-        url: "https://www.facebook.com/penthiandapp/",
+        url: "https://www.facebook.com/penthianofficial/",
         icon: <Facebook />,
     },
     {
