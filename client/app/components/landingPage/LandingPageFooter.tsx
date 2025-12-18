@@ -55,10 +55,13 @@ function LandingPageFooter() {
                   <h3 className="text-grey-2 pb-5">Useful Links</h3>
                   <ul className="flex flex-col gap-4">
                     <li>
-                      <Link
-                        href="https://ownersclub.bitstakeplatform.com/"
-                      >
+                      <Link href="https://ownersclub.bitstakeplatform.com/">
                         Owners Club
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="https://docs.penthian.com/">
+                        Docs
                       </Link>
                     </li>
                   </ul>
