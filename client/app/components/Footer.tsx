@@ -29,7 +29,7 @@ const companyLinks = [
   const socialLinks = [
     { name: "Instagram", href: "https://www.instagram.com/penthiandapp/", icon: Instagram },
     { name: "Twitter", href: "https://x.com/penthiandapp/", icon: Twitter },
-    { name: "Facebook", href: "https://www.facebook.com/penthiandapp/", icon: Facebook },
+    { name: "Facebook", href: "https://www.facebook.com/penthianofficial/", icon: Facebook },
     { name: "LinkedIn", href: "https://www.linkedin.com/company/penthian/", icon: Linkedin },
   ]
 
